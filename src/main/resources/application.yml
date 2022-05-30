@@ -1,0 +1,40 @@
+spring:
+  application:
+    name: album
+
+  jpa:
+    properties:
+      hibernate:
+        '[format_sql]': true
+    defer-datasource-initialization: true
+
+  h2:
+    console:
+      enabled: true
+
+  servlet:
+    multipart:
+      max-file-size: 4MB
+      max-request-size: 4MB
+
+server:
+  port: 8080
+  servlet:
+    context-path: /api
+
+springdoc:
+  version: 1.0
+  api-docs:
+    path: /api-docs
+    enabled: true
+  swagger-ui:
+    use-root-path: true
+
+image:
+  base-url: http://oognuyh.asuscomm.com/api/images
+
+minio:
+  url: http://localhost:9000
+  access-key: minio
+  secret-key: miniopwd
+  bucket: album

@@ -1,0 +1,48 @@
+plugins {
+	id "com.github.sherter.google-java-format" version "${javaFormatVersion}"
+	id 'org.springframework.boot' version '2.6.7'
+	id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+	id 'java'
+}
+
+group = 'com.study'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+configurations {
+	compileOnly {
+		extendsFrom annotationProcessor
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
+	implementation 'org.springframework.boot:spring-boot-starter-hateoas'
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.springframework.boot:spring-boot-starter-cache'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation "org.springdoc:springdoc-openapi-ui:${springdocVersion}"
+	implementation "org.springdoc:springdoc-openapi-data-rest:${springdocVersion}"
+	implementation "org.springdoc:springdoc-openapi-security:${springdocVersion}"
+	implementation "io.minio:minio:${minioVersion}"
+	implementation "com.auth0:java-jwt:${jwtVersion}"
+
+	runtimeOnly 'com.h2database:h2'
+
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+
+	annotationProcessor 'org.projectlombok:lombok'
+	compileOnly 'org.projectlombok:lombok'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-test'
+	testImplementation 'org.springframework.security:spring-security-test'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}
