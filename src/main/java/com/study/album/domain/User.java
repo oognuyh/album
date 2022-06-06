@@ -1,4 +1,4 @@
-package com.study.album.model;
+package com.study.album.domain;
 
 import java.util.Collection;
 import java.util.Collections;
@@ -29,7 +29,7 @@ import org.springframework.security.core.userdetails.UserDetails;
 @ToString
 @NoArgsConstructor
 @Entity(name = "user")
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 public class User extends Traceable implements UserDetails {
 
   public enum Role {
@@ -37,7 +37,7 @@ public class User extends Traceable implements UserDetails {
     USER
   }
 
-  @Id private UUID userId;
+  @EqualsAndHashCode.Include @Id private UUID userId;
 
   @Column(nullable = false)
   private String name;

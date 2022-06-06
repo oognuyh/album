@@ -1,20 +1,23 @@
 package com.study.album.dto.response;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.study.album.model.Post;
-import io.swagger.v3.oas.annotations.media.Schema;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.UUID;
-import lombok.Builder;
-import lombok.Data;
 
-@Data
-@Builder
+import org.springframework.hateoas.RepresentationModel;
+import org.springframework.hateoas.server.core.Relation;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
+
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 @Schema(name = "게시글 요청 응답")
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class PostResponse {
+@Relation(collectionRelation = "posts")
+public class PostResponse extends RepresentationModel<PostResponse> {
 
   @Schema(description = "게시글 고유번호")
   private UUID postId;
@@ -41,17 +44,4 @@ public class PostResponse {
   @Schema(description = "게시글 수정일자")
   @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss")
   private LocalDateTime modifiedAt;
-
-  public static PostResponse from(Post post) {
-    return PostResponse.builder()
-        .postId(post.getPostId())
-        .author(UserResponse.from(post.getAuthor()))
-        .title(post.getTitle())
-        .content(post.getContent())
-        .imageUrls(post.getImageUrls())
-        .tags(post.getTags())
-        .createdAt(post.getCreatedAt())
-        .modifiedAt(post.getModifiedAt())
-        .build();
-  }
 }

@@ -1,9 +1,9 @@
-package com.study.album.model;
+package com.study.album.domain;
 
+import com.study.album.dto.request.UpdatePostRequest;
 import java.util.List;
 import java.util.Objects;
 import java.util.UUID;
-
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
@@ -12,9 +12,6 @@ import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToOne;
-
-import com.study.album.dto.request.UpdatePostRequest;
-
 import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
@@ -27,10 +24,10 @@ import lombok.ToString;
 @ToString
 @NoArgsConstructor
 @Entity(name = "post")
-@EqualsAndHashCode(callSuper = false)
+@EqualsAndHashCode(callSuper = false, onlyExplicitlyIncluded = true)
 public class Post extends Traceable {
 
-  @Id private UUID postId;
+  @EqualsAndHashCode.Include @Id private UUID postId;
 
   @Column(nullable = false)
   private String title;
@@ -52,7 +49,13 @@ public class Post extends Traceable {
   private User author;
 
   @Builder
-  public Post(UUID postId, String title, String content, List<String> imageUrls, List<String> tags, User author) {
+  public Post(
+      UUID postId,
+      String title,
+      String content,
+      List<String> imageUrls,
+      List<String> tags,
+      User author) {
     this.postId = Objects.isNull(postId) ? UUID.randomUUID() : postId;
     this.title = title;
     this.content = content;

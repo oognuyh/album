@@ -1,4 +1,4 @@
-package com.study.album.model;
+package com.study.album.domain;
 
 import java.time.LocalDateTime;
 import javax.persistence.EntityListeners;

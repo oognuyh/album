@@ -1,4 +1,4 @@
-package com.study.album.model;
+package com.study.album.domain;
 
 import java.util.UUID;
 

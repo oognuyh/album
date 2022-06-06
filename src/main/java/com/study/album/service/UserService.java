@@ -1,7 +1,9 @@
 package com.study.album.service;
 
-import java.util.UUID;
-
+import com.study.album.assembler.UserAssembler;
+import com.study.album.assembler.UserSummaryAssembler;
+import com.study.album.domain.User;
+import com.study.album.domain.UserSummary;
 import com.study.album.dto.request.LogInRequest;
 import com.study.album.dto.request.RegisterUserRequest;
 import com.study.album.dto.response.TokenResponse;
@@ -9,13 +11,14 @@ import com.study.album.dto.response.UserResponse;
 import com.study.album.error.ErrorCode;
 import com.study.album.exception.NotFoundException;
 import com.study.album.exception.SecurityException;
-import com.study.album.model.User;
-import com.study.album.model.UserSummary;
 import com.study.album.repository.UserRepository;
 import com.study.album.util.SecurityUtil;
-
-import org.springframework.data.domain.Page;
+import java.util.UUID;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.web.PagedResourcesAssembler;
+import org.springframework.hateoas.PagedModel;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.DisabledException;
@@ -24,9 +27,6 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import lombok.RequiredArgsConstructor;
-import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
 @Service
@@ -39,11 +39,18 @@ public class UserService {
 
   private final AuthenticationManager authenticationManager;
 
+  private final UserAssembler userAssembler;
+
+  private final UserSummaryAssembler userSummaryAssembler;
+
+  private final PagedResourcesAssembler<UserSummary> pagedResourcesAssembler;
+
   @Transactional(readOnly = true)
-  public Page<UserResponse> getUserSummaries(String q, Pageable pageable) {
+  public PagedModel<UserResponse> getUserSummaries(String q, Pageable pageable) {
     log.debug("Received the query term({}) and pageable({})", q, pageable);
 
-    return userRepository.getUserSummaries(q, pageable).map(UserResponse::from);
+    return pagedResourcesAssembler.toModel(
+        userRepository.getUserSummaries(q, pageable), userSummaryAssembler);
   }
 
   @Transactional(readOnly = true)
@@ -57,7 +64,7 @@ public class UserService {
                         ErrorCode.USER_NOT_FOUND,
                         "There is no matching user with user id " + userId));
 
-    return UserResponse.from(userSummary);
+    return userSummaryAssembler.toModel(userSummary);
   }
 
   @Transactional(readOnly = true)
@@ -71,7 +78,7 @@ public class UserService {
                         ErrorCode.USER_NOT_FOUND,
                         "There is no matching user with user id " + userId));
 
-    return UserResponse.from(user);
+    return userAssembler.toModel(user);
   }
 
   @Transactional(readOnly = true)
@@ -81,9 +88,11 @@ public class UserService {
 
       User user =
           (User)
-              authenticationManager.authenticate(
-                  new UsernamePasswordAuthenticationToken(
-                      signInRequest.getEmail(), signInRequest.getPassword())).getPrincipal();
+              authenticationManager
+                  .authenticate(
+                      new UsernamePasswordAuthenticationToken(
+                          signInRequest.getEmail(), signInRequest.getPassword()))
+                  .getPrincipal();
 
       return SecurityUtil.generateTokens(user);
     } catch (BadCredentialsException e) {
@@ -107,10 +116,11 @@ public class UserService {
             .password(passwordEncoder.encode(registerUserRequest.getPassword()))
             .build();
 
-    return UserResponse.from(userRepository.save(user));
+    return userAssembler.toModel(userRepository.save(user));
   }
 
   public TokenResponse refreshToken() {
+    // return SecurityUtil.generateTokens();
     return null;
   }
 }
